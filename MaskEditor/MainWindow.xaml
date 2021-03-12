@@ -1,0 +1,60 @@
+﻿<Window x:Class="MaskEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MaskEditor"
+        mc:Ignorable="d"
+        Title="マスク生成" MinHeight="600" MinWidth="500" Height="800" Width="800" Background="LightGray">
+
+    <Window.Resources>
+        <DrawingBrush x:Key="HatchBrush" TileMode="Tile"
+              Viewport="0,0,30,30" ViewportUnits="Absolute"
+              Viewbox="0,0,30,30" ViewboxUnits="Absolute">
+            <DrawingBrush.Drawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="Black" Thickness="2"/>
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <Geometry>M0,0 L30,30 M15,-15 L45,15 M-15,15 L15,45</Geometry>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height = "150" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row = "0" Orientation = "Horizontal" Margin="10,41,10,0">
+            <TextBlock Text = "ベース画像 : " Margin = "10" Width = "60" />
+            <TextBox x:Name="txtEditor" HorizontalAlignment = "Left"
+                  Margin = "0,10,0,0" VerticalAlignment = "Top" Height="22" Width = "285"/>
+            <Button Content="Browse" Margin="10,8,10,0"
+                Height="26" Width="70" HorizontalAlignment = "Left" VerticalAlignment = "Top" 
+                Click="btnBrowse"  />
+        </StackPanel>
+        <StackPanel Grid.Row = "0" Grid.Column = "0" Orientation = "Horizontal" Margin="100,80,0,0" Height="70">
+
+            <RadioButton x:Name="checkBox1" Content="追加" HorizontalAlignment="Left" Margin="10"
+                  Checked="HandleCheck" Unchecked="HandleUnchecked" Width="Auto"></RadioButton>
+            <RadioButton x:Name="checkBox2" Content="削除" HorizontalAlignment="Left" Margin="10"
+                   Checked="HandleCheck" Unchecked="HandleUnchecked" Width="Auto"></RadioButton>
+
+            <Button Content="Reset" Margin="10,20,10,0" Click="btnReset"
+                Height="26" Width="70" HorizontalAlignment = "Left" VerticalAlignment = "Top" />
+            <Button Content="Save" Margin="10,20,10,0" Click="btnSave"
+                Height="26" Width="70" HorizontalAlignment = "Left" VerticalAlignment = "Top" />
+        </StackPanel>
+
+        <Canvas Name="canDraw" Margin="0,10" Grid.Row="1" Cursor="Cross" 
+                MouseDown="canDraw_MouseDown" MouseMove="canDraw_MouseMove" MouseLeave="canDraw_MouseLeave">
+            <Canvas.Background>
+                <ImageBrush x:Name="imageBrush" Stretch="Uniform" />
+            </Canvas.Background>
+        </Canvas>
+    </Grid>
+</Window>
