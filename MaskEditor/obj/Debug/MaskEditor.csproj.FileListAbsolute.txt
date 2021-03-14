@@ -12,3 +12,16 @@ C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\
 C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor.csproj.GenerateResource.Cache
 C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor.exe
 C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor.pdb
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MainWindow.g.cs
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\App.g.cs
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor_MarkupCompile.cache
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor_MarkupCompile.lref
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\bin\Debug\MaskEditor.exe.config
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\bin\Debug\MaskEditor.exe
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\bin\Debug\MaskEditor.pdb
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MainWindow.baml
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.g.resources
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.csproj.CoreCompileInputs.cache
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.exe
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.pdb
+C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.csprojAssemblyReference.cache
