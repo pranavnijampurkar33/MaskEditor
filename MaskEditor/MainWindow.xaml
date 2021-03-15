@@ -24,8 +24,26 @@
                 </GeometryDrawing>
             </DrawingBrush.Drawing>
         </DrawingBrush>
-
-        <BitmapImage x:Key="backgroundBrush" DecodePixelHeight="1080" DecodePixelWidth="1980" />
+        
+        <VisualBrush x:Key="HatchBrushnew" 
+          TileMode="Tile"
+          Viewport="0,0,7,7" 
+          ViewportUnits="Absolute" 
+          Viewbox="0,0,30,30"    
+          ViewboxUnits="Absolute">
+            <VisualBrush.Transform>
+                <RotateTransform Angle="135" CenterX=".5" CenterY=".5" />
+            </VisualBrush.Transform>
+            <VisualBrush.Visual>
+                <Canvas>
+                    <Path  Stroke="Gray" StrokeThickness="0.1cm" >
+                        <Path.Data>
+                            <LineGeometry StartPoint="15,0" EndPoint="15,30" />
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
     </Window.Resources>
     
     <Grid>
@@ -56,6 +74,11 @@
 
         <Canvas Grid.Row="1" Margin="10" Cursor="Cross" Background="Black" >
             
+        </Canvas>
+        <Canvas Name="canRare" Margin="10" Grid.Row="1" >
+            <Canvas.Background>
+                <ImageBrush x:Name="imageBrushRare" Stretch="Uniform" />
+            </Canvas.Background>
         </Canvas>
         <Canvas Name="canDraw" Margin="10" Grid.Row="1" Cursor="Cross" 
                 MouseDown="canDraw_MouseDown" MouseMove="canDraw_MouseMove" MouseLeave="canDraw_MouseLeave">

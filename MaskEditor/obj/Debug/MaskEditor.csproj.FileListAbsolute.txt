@@ -23,3 +23,16 @@ C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.csproj.Co
 C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.exe
 C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.pdb
 C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MaskEditor.csprojAssemblyReference.cache
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MaskEditor.csprojAssemblyReference.cache
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MainWindow.g.cs
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\App.g.cs
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MaskEditor_MarkupCompile.cache
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MaskEditor_MarkupCompile.lref
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MaskEditor.exe
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MaskEditor.pdb
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\bin\Debug\MaskEditor.exe.config
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\bin\Debug\MaskEditor.exe
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\bin\Debug\MaskEditor.pdb
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MainWindow.baml
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MaskEditor.g.resources
+C:\Users\prath\source\repos\MaskEditor-main\MaskEditor\obj\Debug\MaskEditor.csproj.CoreCompileInputs.cache

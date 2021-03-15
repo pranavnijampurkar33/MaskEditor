@@ -21,6 +21,9 @@ namespace MaskEditor
     {
         private Polyline NewPolyline = null;
         List<Poly> polyList = new List<Poly>();
+        List<Poly> unionPolyList = new List<Poly>();
+        List<Poly> excludePolyList = new List<Poly>();
+        CombinedGeometry union = new CombinedGeometry();
         private PointCollection pc = new PointCollection();
         bool stopDrawing = true;
         private string currentImage = "";
@@ -28,7 +31,6 @@ namespace MaskEditor
         public MainWindow()
         {
             InitializeComponent();
-            //canDraw.Background = new SolidColorBrush(Colors.Black);
         }
         private void btnBrowse(object sender, RoutedEventArgs e)
         {
@@ -41,8 +43,16 @@ namespace MaskEditor
                 {
                     currentImage = openFileDialog.FileName;
                     txtEditor.Text = currentImage;
-                    imageBrush.ImageSource = new BitmapImage(new Uri(currentImage, UriKind.RelativeOrAbsolute));
+                    imageBrushRare.ImageSource = new BitmapImage(new Uri(currentImage, UriKind.RelativeOrAbsolute));
+                    var ratio = Math.Min(canDraw.RenderSize.Width / imageBrushRare.ImageSource.Width, 
+                        canDraw.RenderSize.Height / imageBrushRare.ImageSource.Height);
+                    var imageBrushRareWidth = imageBrushRare.ImageSource.Width * ratio;
+                    var imageBrushRareHeight = imageBrushRare.ImageSource.Height * ratio;
+                    imageBrushRare.ImageSource = null;
 
+                    canDraw.Width = imageBrushRareWidth;
+                    canDraw.Height = imageBrushRareHeight;
+                    imageBrush.ImageSource = new BitmapImage(new Uri(currentImage, UriKind.RelativeOrAbsolute));
                     // Enable Drawing if Image is selected
                     stopDrawing = false;
 
@@ -56,14 +66,10 @@ namespace MaskEditor
               //   .FirstOrDefault(r => r.IsChecked.HasValue && r.IsChecked.Value);
             if (rbAdd.IsChecked == true)
             {
-                //MessageBox.Show(rbAdd.Content.ToString());
-                stopDrawing = false;
                 Console.WriteLine(rbAdd.Content.ToString() +" is "+ rbAdd.IsChecked);
             }
             else if(rbDel.IsChecked == true)
             {
-                //MessageBox.Show(rbDel.Content.ToString());
-                stopDrawing = true;
                 Console.WriteLine(rbDel.Content.ToString() + " is " + rbDel.IsChecked);
             }                
         }
@@ -72,43 +78,62 @@ namespace MaskEditor
         // This will save Polygon(only) in the PNG image with name logo.png
         private void btnSave(object sender, RoutedEventArgs e)
         {
-            
+            // Initialize canvas To save mask image
             Canvas canvas = new Canvas();
             canvas.Height = canDraw.ActualHeight;
             canvas.Width = canDraw.ActualWidth;
             canvas.Background = new SolidColorBrush(Colors.White);
 
-            // Get Union Geometry of all the polygons
-            CombinedGeometry union = Utils.GetUnionGeometry(polyList,canDraw);
+            // Get Union Geometry *INCLUDING* all the polygons Drawn if Add Enabled
+            if (rbAdd.IsChecked == true)
+            {
+                unionPolyList = polyList;
+                CombinedGeometry tempUnion = Utils.GetUnionGeometry(unionPolyList, canDraw);
+                union = Utils.CombinedGeometryUnion(union, tempUnion);
+                Console.WriteLine("In Save Button method "+rbAdd.Content.ToString() + " is " + rbAdd.IsChecked);
+                excludePolyList.Clear();
+            }
+            // Get Union Geometry *EXCLUDING* all the polygons Drawn if Delete Enabled
+            else if (rbDel.IsChecked == true)
+            {
+                excludePolyList = polyList;
+                CombinedGeometry excludes = Utils.GetUnionGeometry(excludePolyList, canDraw);
+                union = Utils.CombinedGeometryExclude(union, excludes);
+                Console.WriteLine("In Save Button method " + rbDel.Content.ToString() + " is " + rbDel.IsChecked);
+                unionPolyList.Clear();
+            }
 
+            // Render results(union final Geometry on the canvas)
             canvas.Children.Add(Utils.GetPath(union, Colors.Black));
             canvas.UpdateLayout();
-            //Save mask image
-            string mask_file = "mask_image.png";
-            Utils.SaveCanvas(canvas, @"mask_image.png");
+            //Save temporary mask image
+            string mask_file = @"mask_image.png";
+            Utils.SaveCanvas(canvas, @mask_file);
 
             // Resize mask image to Base image Height and Width
             System.Drawing.Image mask = System.Drawing.Image.FromFile(mask_file);
 
-            var ratio = Math.Min(canDraw.RenderSize.Width / imageBrush.ImageSource.Width , canDraw.RenderSize.Height / imageBrush.ImageSource.Height);
-            var imageBrushWidth = imageBrush.ImageSource.Width * ratio;
-            var imageBrushHeight = imageBrush.ImageSource.Height * ratio;
-
-            SaveFileDialog dialog = new SaveFileDialog();
-            if (dialog.ShowDialog() == true)
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "Mask Images (*.png) | *.png";
+            if (saveDialog.ShowDialog() == true)
             {
-                Bitmap bmp = Utils.ResizeImage(mask, 1980, 1080);
-                bmp.Save(dialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                var extension = System.IO.Path.GetExtension(saveDialog.FileName);
+                if(extension.ToLower() == ".png")
+                {
+                    Bitmap bmp = Utils.ResizeImage(mask, (int)imageBrush.ImageSource.Width, (int)imageBrush.ImageSource.Height);
+                    Console.WriteLine("Saving resized masked image");
+                    bmp.Save(saveDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                    //Delete temporary mask image
+                    
+                }
+                else
+                {
+                    MessageBox.Show("Please specify \".png\" for the image format");
+                }
             }
 
-            // Using same canvas to add Image BG
-            // Create separate canvas for operations
             canvas.Children.Clear();
             
-            
-            // Set Base image as current CANVAS background
-            
-
             // Make things Ready for new Polygon Drawing
             stopDrawing = false;
             NewPolyline = null;
@@ -216,7 +241,8 @@ namespace MaskEditor
                     polyList.Add(tempPoly);
                     temp.Points = temppc;
 
-                    temp.Fill = this.FindResource("HatchBrush") as DrawingBrush;
+                    //temp.Fill = this.FindResource("HatchBrush") as DrawingBrush;
+                    temp.Fill = this.FindResource("HatchBrushnew") as VisualBrush;
                     canDraw.Children.Add(temp);
                 }
                 if (e.ClickCount == 2)
