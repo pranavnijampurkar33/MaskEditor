@@ -22,7 +22,7 @@ namespace MaskEditor
         private Polyline NewPolyline = null;
         List<Poly> polyList = new List<Poly>();
         private PointCollection pc = new PointCollection();
-        bool stopDrawing = false;
+        bool stopDrawing = true;
         private string currentImage = "";
 
         public MainWindow()
@@ -33,27 +33,41 @@ namespace MaskEditor
         private void btnBrowse(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
             if (openFileDialog.ShowDialog() == true)
-                currentImage = openFileDialog.FileName;
-                txtEditor.Text = currentImage;
-                imageBrush.ImageSource = new BitmapImage(new Uri(currentImage, UriKind.RelativeOrAbsolute));
+            {
+                var fileName = openFileDialog.FileName;
+                if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
+                {
+                    currentImage = openFileDialog.FileName;
+                    txtEditor.Text = currentImage;
+                    imageBrush.ImageSource = new BitmapImage(new Uri(currentImage, UriKind.RelativeOrAbsolute));
+
+                    // Enable Drawing if Image is selected
+                    stopDrawing = false;
+
+                }
+            }                
         }
 
         private void HandleCheck(object sender, RoutedEventArgs e)
         {
-
+            //var checkedValue = panel.Children.OfType<RadioButton>()
+              //   .FirstOrDefault(r => r.IsChecked.HasValue && r.IsChecked.Value);
+            if (rbAdd.IsChecked == true)
+            {
+                //MessageBox.Show(rbAdd.Content.ToString());
+                stopDrawing = false;
+                Console.WriteLine(rbAdd.Content.ToString() +" is "+ rbAdd.IsChecked);
+            }
+            else if(rbDel.IsChecked == true)
+            {
+                //MessageBox.Show(rbDel.Content.ToString());
+                stopDrawing = true;
+                Console.WriteLine(rbDel.Content.ToString() + " is " + rbDel.IsChecked);
+            }                
         }
-
-        private void HandleUnchecked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void HandleThirdState(object sender, RoutedEventArgs e)
-        {
-
-        }
-
+        
         // Save button functionality
         // This will save Polygon(only) in the PNG image with name logo.png
         private void btnSave(object sender, RoutedEventArgs e)
@@ -69,24 +83,29 @@ namespace MaskEditor
 
             canvas.Children.Add(Utils.GetPath(union, Colors.Black));
             canvas.UpdateLayout();
+            //Save mask image
+            string mask_file = "mask_image.png";
             Utils.SaveCanvas(canvas, @"mask_image.png");
 
+            // Resize mask image to Base image Height and Width
+            System.Drawing.Image mask = System.Drawing.Image.FromFile(mask_file);
+
+            var ratio = Math.Min(canDraw.RenderSize.Width / imageBrush.ImageSource.Width , canDraw.RenderSize.Height / imageBrush.ImageSource.Height);
+            var imageBrushWidth = imageBrush.ImageSource.Width * ratio;
+            var imageBrushHeight = imageBrush.ImageSource.Height * ratio;
+
+            SaveFileDialog dialog = new SaveFileDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                Bitmap bmp = Utils.ResizeImage(mask, 1980, 1080);
+                bmp.Save(dialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+            }
 
             // Using same canvas to add Image BG
             // Create separate canvas for operations
             canvas.Children.Clear();
             
-
-            ImageBrush ib = new ImageBrush();
-            ib.ImageSource = new BitmapImage(new Uri(currentImage, UriKind.Relative));
-            canvas.Background = ib;
-
-            canvas.Children.Add(Utils.GetPath(union, Colors.Blue, .4d));
-            canvas.UpdateLayout();
-            string base_image = "base_image1.png";
-            Utils.SaveCanvas(canvas, base_image);
-            canvas.Children.Clear();
-
+            
             // Set Base image as current CANVAS background
             
 
@@ -95,6 +114,7 @@ namespace MaskEditor
             NewPolyline = null;
             pc = new PointCollection(); 
             canDraw.Children.Clear();
+            polyList.Clear();           // New polylist for every new Figure
             canDraw.Children.Add(Utils.GetPath(union, Colors.Blue, .4d));
         }
 
@@ -110,18 +130,15 @@ namespace MaskEditor
 
         private void canDraw_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Flag to stop mouse drawing activity on Double click
-            
-
             // See which button was pressed.
             if (e.RightButton == MouseButtonState.Pressed)
             {
-                stopDrawing = false;
                 Console.WriteLine("Mouse Right Button click");
                 // See if we are drawing a new polygon.
                 if (NewPolyline != null)
                 {
-                    
+                    // Flag to stop mouse drawing activity on Double click
+                    stopDrawing = false;    
                     if (NewPolyline.Points.Count > 2)
                     {
                         // Polygon1 = [A,B,C],Polygon2 = [A,C,D]  New Polyline = [A,MouseClick,D]

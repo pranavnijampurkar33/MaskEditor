@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MaskEditor"
         mc:Ignorable="d"
-        Title="マスク生成" MinHeight="600" MinWidth="500" Height="800" Width="800" Background="LightGray">
+        Title="マスク生成"
+        Height="700" Width="700" 
+        ResizeMode="NoResize" Background="LightGray">
 
     <Window.Resources>
         <DrawingBrush x:Key="HatchBrush" TileMode="Tile"
@@ -22,6 +24,8 @@
                 </GeometryDrawing>
             </DrawingBrush.Drawing>
         </DrawingBrush>
+
+        <BitmapImage x:Key="backgroundBrush" DecodePixelHeight="1080" DecodePixelWidth="1980" />
     </Window.Resources>
     
     <Grid>
@@ -31,18 +35,18 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row = "0" Orientation = "Horizontal" Margin="10,41,10,0">
             <TextBlock Text = "ベース画像 : " Margin = "10" Width = "60" />
-            <TextBox x:Name="txtEditor" HorizontalAlignment = "Left"
+            <TextBox x:Name="txtEditor" HorizontalAlignment = "Left" IsEnabled="False"
                   Margin = "0,10,0,0" VerticalAlignment = "Top" Height="22" Width = "285"/>
             <Button Content="Browse" Margin="10,8,10,0"
                 Height="26" Width="70" HorizontalAlignment = "Left" VerticalAlignment = "Top" 
                 Click="btnBrowse"  />
         </StackPanel>
-        <StackPanel Grid.Row = "0" Grid.Column = "0" Orientation = "Horizontal" Margin="100,80,0,0" Height="70">
+        <StackPanel Name="panel" Grid.Row = "0" Grid.Column = "0" Orientation = "Horizontal" Margin="100,80,0,0" Height="70">
 
-            <RadioButton x:Name="checkBox1" Content="追加" HorizontalAlignment="Left" Margin="10"
-                  Checked="HandleCheck" Unchecked="HandleUnchecked" Width="Auto"></RadioButton>
-            <RadioButton x:Name="checkBox2" Content="削除" HorizontalAlignment="Left" Margin="10"
-                   Checked="HandleCheck" Unchecked="HandleUnchecked" Width="Auto"></RadioButton>
+            <RadioButton x:Name="rbAdd" Content="追加" HorizontalAlignment="Left" Margin="10"
+                  Checked="HandleCheck" Width="Auto" IsChecked="True"></RadioButton>
+            <RadioButton x:Name="rbDel" Content="削除" HorizontalAlignment="Left" Margin="10"
+                   Checked="HandleCheck"  Width="Auto"></RadioButton>
 
             <Button Content="Reset" Margin="10,20,10,0" Click="btnReset"
                 Height="26" Width="70" HorizontalAlignment = "Left" VerticalAlignment = "Top" />
@@ -50,11 +54,15 @@
                 Height="26" Width="70" HorizontalAlignment = "Left" VerticalAlignment = "Top" />
         </StackPanel>
 
-        <Canvas Name="canDraw" Margin="0,10" Grid.Row="1" Cursor="Cross" 
+        <Canvas Grid.Row="1" Margin="10" Cursor="Cross" Background="Black" >
+            
+        </Canvas>
+        <Canvas Name="canDraw" Margin="10" Grid.Row="1" Cursor="Cross" 
                 MouseDown="canDraw_MouseDown" MouseMove="canDraw_MouseMove" MouseLeave="canDraw_MouseLeave">
             <Canvas.Background>
                 <ImageBrush x:Name="imageBrush" Stretch="Uniform" />
             </Canvas.Background>
         </Canvas>
+
     </Grid>
 </Window>

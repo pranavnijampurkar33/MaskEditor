@@ -8,8 +8,6 @@ C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\
 C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor_MarkupCompile.lref
 C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MainWindow.baml
 C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor.g.resources
-C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor.Properties.Resources.resources
-C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor.csproj.GenerateResource.Cache
 C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor.exe
 C:\ICF_AutoCapsule_disabled\Projects\6_姿勢推定ベース機能\GUI\Projects\MaskEditor\MaskEditor\obj\Debug\MaskEditor.pdb
 C:\Users\prath\source\repos\MaskEditor\MaskEditor\obj\Debug\MainWindow.g.cs
