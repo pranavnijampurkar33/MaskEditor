@@ -61,9 +61,9 @@
         </StackPanel>
         <StackPanel Name="panel" Grid.Row = "0" Grid.Column = "0" Orientation = "Horizontal" Margin="100,80,0,0" Height="70">
 
-            <RadioButton x:Name="rbAdd" Content="追加" HorizontalAlignment="Left" Margin="10"
+            <RadioButton x:Name="rbAdd" Content="追加" HorizontalAlignment="Left" Margin="10,10,10,45"
                   Checked="HandleCheck" Width="Auto" IsChecked="True"></RadioButton>
-            <RadioButton x:Name="rbDel" Content="削除" HorizontalAlignment="Left" Margin="10"
+            <RadioButton x:Name="rbDel" Content="削除" HorizontalAlignment="Left" Margin="10,10,10,45"
                    Checked="HandleCheck"  Width="Auto"></RadioButton>
 
             <Button Content="Reset" Margin="10,20,10,0" Click="btnReset"
@@ -71,17 +71,20 @@
             <Button Content="Save" Margin="10,20,10,0" Click="btnSave"
                 Height="26" Width="70" HorizontalAlignment = "Left" VerticalAlignment = "Top" />
         </StackPanel>
+        <!-- 3 Canvas Usage
+            1. Blank Black Color Only
+            2. Load Temporary image and get the rendered image width and height
+            3. Actual Canvas for operation equals to loaded rendered image dimensions
+        -->
+            <Canvas Grid.Row="1" Margin="10" Cursor="Cross" Background="Black" />
 
-        <Canvas Grid.Row="1" Margin="10" Cursor="Cross" Background="Black" >
-            
-        </Canvas>
         <Canvas Name="canRare" Margin="10" Grid.Row="1" >
             <Canvas.Background>
                 <ImageBrush x:Name="imageBrushRare" Stretch="Uniform" />
             </Canvas.Background>
         </Canvas>
         <Canvas Name="canDraw" Margin="10" Grid.Row="1" Cursor="Cross" 
-                MouseDown="canDraw_MouseDown" MouseMove="canDraw_MouseMove" MouseLeave="canDraw_MouseLeave">
+                MouseDown="canDraw_MouseDown" MouseMove="canDraw_MouseMove" >
             <Canvas.Background>
                 <ImageBrush x:Name="imageBrush" Stretch="Uniform" />
             </Canvas.Background>

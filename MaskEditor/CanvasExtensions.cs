@@ -35,6 +35,7 @@ namespace MaskEditor
                 encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
                 encoder.Save(os);
             }
+            renderBitmap.Clear();
         }
     }
 }

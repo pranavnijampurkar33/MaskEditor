@@ -34,8 +34,16 @@ namespace MaskEditor
         }
         private void btnBrowse(object sender, RoutedEventArgs e)
         {
+            if(canDraw.Children.Count >= 1) {
+                if (MessageBox.Show("編集中のマスクは初期化されます。よろしいですか？",
+                    "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    // Close the window  
+                }
+                else return;
+            }
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+            openFileDialog.Filter = "Image files (*.jpg, *.png) | *.jpg; *.png; | 全て(*.*) | *.*";
             if (openFileDialog.ShowDialog() == true)
             {
                 var fileName = openFileDialog.FileName;
@@ -56,14 +64,23 @@ namespace MaskEditor
                     // Enable Drawing if Image is selected
                     stopDrawing = false;
 
+                    // Re-Initialize Union and Exclude Geometry
+                    union = new CombinedGeometry();
+                    unionPolyList.Clear();
+                    excludePolyList.Clear();
+                    
+                    // Make things Ready for new Polygon Drawing
+                    NewPolyline = null;
+                    pc = new PointCollection();
+                    canDraw.Children.Clear();
+                    polyList.Clear();           // New polylist for every new Figure
+                    canDraw.Children.Clear();
                 }
             }                
         }
 
         private void HandleCheck(object sender, RoutedEventArgs e)
         {
-            //var checkedValue = panel.Children.OfType<RadioButton>()
-              //   .FirstOrDefault(r => r.IsChecked.HasValue && r.IsChecked.Value);
             if (rbAdd.IsChecked == true)
             {
                 Console.WriteLine(rbAdd.Content.ToString() +" is "+ rbAdd.IsChecked);
@@ -84,63 +101,57 @@ namespace MaskEditor
             canvas.Width = canDraw.ActualWidth;
             canvas.Background = new SolidColorBrush(Colors.White);
 
-            // Get Union Geometry *INCLUDING* all the polygons Drawn if Add Enabled
-            if (rbAdd.IsChecked == true)
-            {
-                unionPolyList = polyList;
-                CombinedGeometry tempUnion = Utils.GetUnionGeometry(unionPolyList, canDraw);
-                union = Utils.CombinedGeometryUnion(union, tempUnion);
-                Console.WriteLine("In Save Button method "+rbAdd.Content.ToString() + " is " + rbAdd.IsChecked);
-                excludePolyList.Clear();
-            }
-            // Get Union Geometry *EXCLUDING* all the polygons Drawn if Delete Enabled
-            else if (rbDel.IsChecked == true)
-            {
-                excludePolyList = polyList;
-                CombinedGeometry excludes = Utils.GetUnionGeometry(excludePolyList, canDraw);
-                union = Utils.CombinedGeometryExclude(union, excludes);
-                Console.WriteLine("In Save Button method " + rbDel.Content.ToString() + " is " + rbDel.IsChecked);
-                unionPolyList.Clear();
-            }
-
             // Render results(union final Geometry on the canvas)
             canvas.Children.Add(Utils.GetPath(union, Colors.Black));
             canvas.UpdateLayout();
-            //Save temporary mask image
-            string mask_file = @"mask_image.png";
-            Utils.SaveCanvas(canvas, @mask_file);
-
-            // Resize mask image to Base image Height and Width
-            System.Drawing.Image mask = System.Drawing.Image.FromFile(mask_file);
+            
 
             SaveFileDialog saveDialog = new SaveFileDialog();
             saveDialog.Filter = "Mask Images (*.png) | *.png";
-            if (saveDialog.ShowDialog() == true)
-            {
-                var extension = System.IO.Path.GetExtension(saveDialog.FileName);
-                if(extension.ToLower() == ".png")
+            try {
+                if (saveDialog.ShowDialog() == true)
                 {
-                    Bitmap bmp = Utils.ResizeImage(mask, (int)imageBrush.ImageSource.Width, (int)imageBrush.ImageSource.Height);
-                    Console.WriteLine("Saving resized masked image");
-                    bmp.Save(saveDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
-                    //Delete temporary mask image
-                    
-                }
-                else
-                {
-                    MessageBox.Show("Please specify \".png\" for the image format");
+                    var extension = System.IO.Path.GetExtension(saveDialog.FileName);
+                    if (extension.ToLower() == ".png")
+                    {
+                        //Save temporary mask image
+                        string mask_file = @"mask_image.png";
+                        Utils.SaveCanvas(canvas, @mask_file);
+
+                        // Resize mask image to Base image Height and Width
+                        System.Drawing.Image mask = System.Drawing.Image.FromFile(@mask_file);
+
+                        Bitmap bmp = Utils.ResizeImage(mask, (int)imageBrush.ImageSource.Width, (int)imageBrush.ImageSource.Height);
+                        Console.WriteLine("Saving resized masked image");
+                        bmp.Save(saveDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                        // dispose 
+                        mask.Dispose();
+                        bmp.Dispose();
+
+                        // Re-Initialize Union and Exclude Geometry
+                        union = new CombinedGeometry();
+                        unionPolyList.Clear();
+                        excludePolyList.Clear();
+
+                        canvas.Children.Clear();
+
+                        // Make things Ready for new Polygon Drawing
+                        NewPolyline = null;
+                        pc = new PointCollection();
+                        canDraw.Children.Clear();
+                        polyList.Clear();           // New polylist for every new Figure
+                        canDraw.Children.Clear();
+                    }
+                    else
+                    {
+                        MessageBox.Show("画像フォーマットはpngを指定してください。");
+                    }
                 }
             }
-
-            canvas.Children.Clear();
-            
-            // Make things Ready for new Polygon Drawing
-            stopDrawing = false;
-            NewPolyline = null;
-            pc = new PointCollection(); 
-            canDraw.Children.Clear();
-            polyList.Clear();           // New polylist for every new Figure
-            canDraw.Children.Add(Utils.GetPath(union, Colors.Blue, .4d));
+            catch (Exception exception) {
+                Console.WriteLine("Resized masked image is not saved");
+                Console.WriteLine(exception.GetBaseException());
+            }
         }
 
         // Reset the canvas 
@@ -189,20 +200,17 @@ namespace MaskEditor
                     }
                     // if NewPolyLine(Red dashed line) has 2 points [pt by lclick , mouse move point] remove both from newpolyline
                     // Empty global pc
-                    // clear canvas canDraw
+                    // Remove only last Element(Part of PolyLine) from Canvas 
                     // clear Newpolyline to start fresh
                     else
                     {
                         NewPolyline = null;
-                        canDraw.Children.Clear();
+                        canDraw.Children.RemoveAt(canDraw.Children.Count-1);
                         pc.Clear();
                     }
                 }
-                //return;
             }
-
-
-
+            
             // Add a point to the new polygon.
             if (e.LeftButton == MouseButtonState.Pressed && !stopDrawing )
             {
@@ -226,7 +234,6 @@ namespace MaskEditor
                     if (NewPolyline.Points.Count < 3) {
                         NewPolyline.Points.Add(e.GetPosition(canDraw));
                     }
-                    
                     pc.Add(e.GetPosition(canDraw));   
                 }
                 if (pc.Count() >= 3)
@@ -240,17 +247,43 @@ namespace MaskEditor
                     Polygon temp = tempPoly.GetPolygon();
                     polyList.Add(tempPoly);
                     temp.Points = temppc;
-
-                    //temp.Fill = this.FindResource("HatchBrush") as DrawingBrush;
                     temp.Fill = this.FindResource("HatchBrushnew") as VisualBrush;
                     canDraw.Children.Add(temp);
                 }
+                // On Mouse Double Click
                 if (e.ClickCount == 2)
                 {
-                    // Stop Drawing functionality
-                    canDraw.Children.RemoveAt(canDraw.Children.Count - 1);
-                    polyList.RemoveAt(polyList.Count-1);
-                    stopDrawing = true;
+                    if (polyList.Count >= 1)
+                    { 
+                        canDraw.Children.RemoveAt(canDraw.Children.Count - 1);
+                        polyList.RemoveAt(polyList.Count-1);
+                        //stopDrawing = true;
+
+                        // Get Union Geometry *INCLUDING* all the polygons Drawn if Add Enabled
+                        if (rbAdd.IsChecked == true)
+                        {
+                            unionPolyList = polyList;
+                            CombinedGeometry tempUnion = Utils.GetUnionGeometry(unionPolyList, canDraw);
+                            union = Utils.CombinedGeometryUnion(union, tempUnion);
+                            Console.WriteLine("In Save Button method " + rbAdd.Content.ToString() + " is " + rbAdd.IsChecked);
+                            excludePolyList.Clear();
+                        }
+                        // Get Union Geometry *EXCLUDING* all the polygons Drawn if Delete Enabled
+                        else if (rbDel.IsChecked == true)
+                        {
+                            excludePolyList = polyList;
+                            CombinedGeometry excludes = Utils.GetUnionGeometry(excludePolyList, canDraw);
+                            union = Utils.CombinedGeometryExclude(union, excludes);
+                            Console.WriteLine("In Save Button method " + rbDel.Content.ToString() + " is " + rbDel.IsChecked);
+                            unionPolyList.Clear();
+                        }
+                        // Make things Ready for new Polygon Drawing
+                        NewPolyline = null;
+                        pc = new PointCollection();
+                        canDraw.Children.Clear();
+                        polyList.Clear();           // New polylist for every new Figure
+                        canDraw.Children.Add(Utils.GetPath(union, Colors.Blue, .4d));
+                    }
                 }
             }
         }
@@ -272,11 +305,6 @@ namespace MaskEditor
                     NewPolyline.Points[1] = e.GetPosition(canDraw);
                 }
             }
-        }
-
-        private void canDraw_MouseLeave(object sender, MouseEventArgs e)
-        {
-            // TO BE REMOVE
         }
     }
 }
